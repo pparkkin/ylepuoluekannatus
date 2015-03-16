@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <body>
+    <div id="graph"></div>
+    <div id="legend"></div>
+  </body>
+  <link type="text/css" rel="stylesheet" href="/javascript/rickshaw.min.css">
+  <script src="/javascript/vendor/d3.min.js"></script>
+  <script src="/javascript/vendor/d3.layout.min.js"></script>
+  <script src="/javascript/rickshaw.min.js"></script>
+  <script>
+var graph = new Rickshaw.Graph({
+    element: document.querySelector("#graph"),
+    renderer: 'line',
+    series: [{
+        name: 'KESK',
+        data: [
+            { x: 0, y: 45 },
+            { x: 1, y: 52 }
+        ],
+        color: 'rgb(149, 193, 31)'
+    }, {
+        name: 'SDP',
+        data: [
+            { x: 0, y: 40 },
+            { x: 1, y: 49 }
+        ],
+        color: 'rgb(225, 25, 49)'
+    }, {
+        name: 'KOK',
+        data: [
+            { x: 0, y: 20 },
+            { x: 1, y: 24 }
+        ],
+        color: 'cornflowerblue'
+    }, {
+        name: 'PERUSS',
+        data: [
+            { x: 0, y: 32 },
+            { x: 1, y: 28 }
+        ],
+        color: 'rgb(0, 35, 149)'
+    }, {
+        name: 'VAS',
+        data: [
+            { x: 0, y: 18 },
+            { x: 1, y: 20 }
+        ],
+        color: '#ed1c24'
+    }, {
+        name: 'VIHR',
+        data: [
+            { x: 0, y: 15 },
+            { x: 1, y: 25 }
+        ],
+        color: 'rgb(97, 191, 26)'
+    }]
+});
+ 
+var legend = new Rickshaw.Graph.Legend({
+    element: document.querySelector('#legend'),
+    graph: graph
+});
+
+graph.render();
+  </script>
+</html>
+{% endautoescape %}
