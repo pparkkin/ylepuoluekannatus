@@ -1,3 +1,5 @@
 Vagrantfile
 provisioning
 .vagrant
+
+*.pyc
