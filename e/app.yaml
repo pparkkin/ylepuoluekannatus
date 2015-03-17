@@ -7,8 +7,8 @@ threadsafe: true
 handlers:
 - url: /css
   static_dir: css
-- url: /javascript
-  static_dir: javascript
+- url: /rickshaw
+  static_dir: rickshaw
 - url: /.*
   script: e.application
 

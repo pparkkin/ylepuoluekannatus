@@ -1,0 +1,3 @@
+[submodule "e/rickshaw"]
+	path = e/rickshaw
+	url = https://github.com/shutterstock/rickshaw
