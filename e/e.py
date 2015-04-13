@@ -34,6 +34,6 @@ class MainPage(webapp2.RequestHandler):
 
 
 application = webapp2.WSGIApplication([
-    ('/', MainPage),
+    ('/test', MainPage),
 ], debug=True)
 

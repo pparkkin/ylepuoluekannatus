@@ -9,7 +9,13 @@ handlers:
   static_dir: css
 - url: /rickshaw
   static_dir: rickshaw
-- url: /.*
+- url: /new
+  script: new.application
+- url: /preview
+  script: preview.application
+- url: /
+  script: main.application
+- url: /test
   script: e.application
 
 # [START libraries]
