@@ -89,7 +89,9 @@ def populate_db():
 
     for n, c in pcolors:
         p = Party(parent=pkdata_key(), name=n, color=c)
-        data = [Datapoint(date=datetime.strptime(t, tformat), value=v) for t, v in dc.select_party(n)]
+        raw = dc.select_party(n)
+        raw = sorted(raw, key=lambda tv: tv[0])
+        data = [Datapoint(date=datetime.strptime(t, tformat), value=v) for t, v in raw]
         for d in data: d.put()
         p.data = data
         p.put()
