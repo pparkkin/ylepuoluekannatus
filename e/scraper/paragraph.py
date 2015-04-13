@@ -65,7 +65,8 @@ def to_float_list(ts):
             fs.append(float(t.replace(',', '.')))
         except ValueError:
             #print '"%s"' % t # debug
-            fs.append(None)
+            #fs.append(None)
+            pass
     return fs
 
 def compile_results(rs):
