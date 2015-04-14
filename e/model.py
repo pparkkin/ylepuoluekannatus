@@ -6,27 +6,18 @@ import random
 from datetime import date
 from datetime import datetime
 
-import yaml
-
-from scraper import pkscraper
+## Parent keys for data sets
 
 DEFAULT_DATASET='default'
 
 def pkdata_key(dataset_name=DEFAULT_DATASET):
     return ndb.Key('PKData', dataset_name)
 
-class Datapoint(ndb.Model):
-    date = ndb.DateProperty()
-    value = ndb.FloatProperty()
-
-class Party(ndb.Model):
-    name = ndb.StringProperty(indexed=True)
-    color = ndb.StringProperty(indexed=False)
-    data = ndb.StructuredProperty(Datapoint, repeated=True)
+## Meta data for data sets
 
 class MetaData(ndb.Model):
-    url = ndb.StringProperty()
-    yml = ndb.StringProperty()
+    url = ndb.StringProperty(indexed=False)
+    yml = ndb.StringProperty(indexed=False)
 
 def store_metadata(dataset, url, yml):
     m = MetaData(parent=pkdata_key(dataset), url=url, yml=yml)
@@ -39,48 +30,18 @@ def fetch_metadata(dataset):
     else:
         return (None, None)
 
-class DataCollector:
-    # Rickshaw data looks like this:
-    # series:
-    # {
-    #   name: 'SDP',
-    #   color: 'red',
-    #   data: [
-    #     {x: 0, y: 22},
-    #     {x: 1, y: 16},
-    #     ...
-    #   ]
-    # }
-    def __init__(self):
-        self._results = {}
-    def add_point(self, t, p, v):
-        pkey = p.upper()
-        if pkey in self._results.keys():
-            # fetch party
-            party = self._results[pkey]
-        else:
-            # create party
-            party = []
-            pass
-        # add data point (t, v)
-        party.append((t,v))
-        self._results[pkey] = party
-    def select_party(self, pp):
-        return self._results.get(pp.upper(), None)
-#    def select_time(self, tt):
-#        res = []
-#        for t, p, v in self._results:
-#            if t == tt: res.append((t, p, v))
-#        return res
+## Actual data sets
 
-def create_fake_data(n=20):
-    return [Datapoint(date=date(2015, 3, (i+1)), value=(random.random() * 30)) for i in range(n)]
+class Datapoint(ndb.Model):
+    date = ndb.DateProperty(indexed=False)
+    value = ndb.FloatProperty(indexed=False)
 
-def read_yaml():
-    stream = file('pk.yaml')
-    return yaml.load_all(stream)
+class Party(ndb.Model):
+    name = ndb.StringProperty(indexed=True)
+    color = ndb.StringProperty(indexed=False)
+    data = ndb.StructuredProperty(Datapoint, repeated=True)
 
-def clear_db(dataset=None):
+def clear_data(dataset=None):
     # clear db
     if dataset:
         ndb.delete_multi(Datapoint.query(ancestor=pkdata_key(dataset)).fetch(keys_only=True))
@@ -91,36 +52,25 @@ def clear_db(dataset=None):
         ndb.delete_multi(Party.query().fetch(keys_only=True))
         ndb.delete_multi(MetaData.query().fetch(keys_only=True))
 
-def populate_db():
-
-    pcolors = [
-        ("KOK", "cornflowerblue"),
-        ("SDP", "rgb(225, 25, 49)"),
-        ("KESK", "rgb(149, 193, 31)"),
-        ("PERUSS", "rgb(0, 35, 149)"),
-        ("VIHR", "rgb(97, 191, 26)"),
-        ("VAS", "#ed1c24"),
-    ]
-
-    pkurl = "http://www.yle.fi/tvuutiset/uutiset/upics/liitetiedostot/YLE_puoluekannatus_maalis15.htm"
-    dc = DataCollector()
-    # read yaml
-    descr = read_yaml()
-    pkscraper.scrape(dc, pkurl, descr)
-
+def _clean_raw(raw):
     tformat = '%Y/%m/%d'
 
-    for n, c in pcolors:
-        p = Party(parent=pkdata_key(), name=n, color=c)
-        raw = dc.select_party(n)
-        raw = sorted(raw, key=lambda tv: tv[0])
-        data = [Datapoint(date=datetime.strptime(t, tformat), value=v) for t, v in raw]
+    raw = sorted(raw, key=lambda tv: tv[0])
+    return [(datetime.strptime(t, tformat), v) for t, v in raw]
+
+def store_data(dataset, data):
+    for pi in data:
+        n = pi['name']
+        c = pi['color']
+        p = Party(parent=pkdata_key(dataset), name=n, color=c)
+        raw = _clean_raw(pi['datapoints'])
+        data = [Datapoint(date=t, value=v) for t, v in raw]
         for d in data: d.put()
         p.data = data
         p.put()
 
-def fetch_data():
-    return Party.query().fetch()
+def fetch_data(dataset):
+    return Party.query(ancestor=pkdata_key(dataset)).fetch()
 
 
 

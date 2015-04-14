@@ -17,6 +17,18 @@ class NewDataPreview(webapp2.RequestHandler):
     def get(self):
         (url, yml) = model.fetch_metadata(PREVIEW_DATASET)
 
+        # Rickshaw data looks like this:
+        # series:
+        # {
+        #   name: 'SDP',
+        #   color: 'red',
+        #   data: [
+        #     {x: 0, y: 22},
+        #     {x: 1, y: 16},
+        #     ...
+        #   ]
+        # }
+
         template_values = {
             'url': url,
             'yml': yml,
