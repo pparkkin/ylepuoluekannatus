@@ -41,39 +41,47 @@ pcolors = [
     ("VAS", "#ed1c24"),
 ]
 
+def scrape_data(url, yml):
+    dc = DataCollector()
+    pkscraper.scrape(dc, url, yml)
+    return dc
+
+def store_data(dataset, dc):
+    data = []
+    for n, c in pcolors:
+        pi = {
+            'name': n,
+            'color': c,
+            'datapoints': dc.select_party(n),
+        }
+        data.append(pi)
+    model.store_data(dataset, data)
+
 ## Handlers for /new
 
 class NewDataSource(webapp2.RequestHandler):
     def get(self):
+        (url, yml) = model.fetch_metadata(DATASET)
+
+        template_values = {
+            'url': url,
+            'yml': yml,
+        }
+
         template = JINJA_ENVIRONMENT.get_template('new.html')
-        self.response.write(template.render())
+        self.response.write(template.render(template_values))
 
     def post(self):
-        #url = self.request.get('url')
-        url = "http://www.yle.fi/tvuutiset/uutiset/upics/liitetiedostot/YLE_puoluekannatus_maalis15.htm"
-        #yml = self.request.get('yml')
-        yml = file('pk.yaml').read()
+        url = self.request.get('url')
+        #url = "http://www.yle.fi/tvuutiset/uutiset/upics/liitetiedostot/YLE_puoluekannatus_maalis15.htm"
+        yml = self.request.get('yml')
+        #yml = file('pk.yaml').read()
 
-## Scraping...
-        dc = DataCollector()
-        pkscraper.scrape(dc, url, yml)
-## End scraping ...
-
+        dc = scrape_data(url, yml)
         model.clear_data()
-
-## Push data...
-        data = []
-        for n, c in pcolors:
-            pi = {
-                'name': n,
-                'color': c,
-                'datapoints': dc.select_party(n),
-            }
-            data.append(pi)
-        model.store_data(DATASET, data)
-## End push data...
-
+        store_data(DATASET, dc)
         model.store_metadata(DATASET, url, yml)
+
         self.redirect('/preview')
 
 
