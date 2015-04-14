@@ -24,6 +24,21 @@ class Party(ndb.Model):
     color = ndb.StringProperty(indexed=False)
     data = ndb.StructuredProperty(Datapoint, repeated=True)
 
+class MetaData(ndb.Model):
+    url = ndb.StringProperty()
+    yml = ndb.StringProperty()
+
+def store_metadata(dataset, url, yml):
+    m = MetaData(parent=pkdata_key(dataset), url=url, yml=yml)
+    m.put()
+
+def fetch_metadata(dataset):
+    ms = MetaData.query(ancestor=pkdata_key(dataset)).fetch()
+    if len(ms) > 0:
+        return (ms[0].url, ms[0].yml)
+    else:
+        return (None, None)
+
 class DataCollector:
     # Rickshaw data looks like this:
     # series:
@@ -65,10 +80,18 @@ def read_yaml():
     stream = file('pk.yaml')
     return yaml.load_all(stream)
 
-def populate_db():
+def clear_db(dataset=None):
     # clear db
-    ndb.delete_multi(Datapoint.query().fetch(keys_only=True))
-    ndb.delete_multi(Party.query().fetch(keys_only=True))
+    if dataset:
+        ndb.delete_multi(Datapoint.query(ancestor=pkdata_key(dataset)).fetch(keys_only=True))
+        ndb.delete_multi(Party.query(ancestor=pkdata_key(dataset)).fetch(keys_only=True))
+        ndb.delete_multi(MetaData.query(ancestor=pkdata_key(dataset)).fetch(keys_only=True))
+    else:
+        ndb.delete_multi(Datapoint.query().fetch(keys_only=True))
+        ndb.delete_multi(Party.query().fetch(keys_only=True))
+        ndb.delete_multi(MetaData.query().fetch(keys_only=True))
+
+def populate_db():
 
     pcolors = [
         ("KOK", "cornflowerblue"),

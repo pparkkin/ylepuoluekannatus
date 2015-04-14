@@ -1,10 +1,28 @@
+import os
 
 import webapp2
+import jinja2
+
+import model
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
+
+DATASET = 'preview'
 
 class NewDataSource(webapp2.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'        
-        self.response.write("New data source")
+        template = JINJA_ENVIRONMENT.get_template('new.html')
+        self.response.write(template.render())
+
+    def post(self):
+        url = self.request.get('url')
+        yml = self.request.get('yml')
+        model.clear_db()
+        model.store_metadata(DATASET, url, yml)
+        self.redirect('/preview')
 
 
 application = webapp2.WSGIApplication([
