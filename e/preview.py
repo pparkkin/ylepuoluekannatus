@@ -29,9 +29,12 @@ class NewDataPreview(webapp2.RequestHandler):
         #   ]
         # }
 
+        data = model.fetch_data(PREVIEW_DATASET)
+
         template_values = {
             'url': url,
             'yml': yml,
+            'data': data,
         }
 
         template = JINJA_ENVIRONMENT.get_template('preview.html')

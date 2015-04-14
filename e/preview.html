@@ -1,10 +1,10 @@
 <html>
     <body>
-        <form action="/new" method="POST">
-            <div>{{ url }}</div>
-            <div><pre>{{ yml }}</pre></div>
-        </form>
+        {% include "graph.html" %}
+        <div>{{ url }}</div>
+        <div><pre>{{ yml }}</pre></div>
     </body>
+    {% include "graph_footer.html" %}
 </html>
 
 
