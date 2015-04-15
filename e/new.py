@@ -61,11 +61,11 @@ def store_data(dataset, dc):
 
 class NewDataSource(webapp2.RequestHandler):
     def get(self):
-        (url, yml) = model.fetch_metadata(DATASET)
+        m = model.fetch_metadata(DATASET)
 
         template_values = {
-            'url': url,
-            'yml': yml,
+            'url': m.url,
+            'yml': m.yml,
         }
 
         template = JINJA_ENVIRONMENT.get_template('new.html')
@@ -78,7 +78,8 @@ class NewDataSource(webapp2.RequestHandler):
         #yml = file('pk.yaml').read()
 
         dc = scrape_data(url, yml)
-        model.clear_data(DATASET)
+        #model.clear_data(DATASET)
+        model.clear_data() # Nuclear! For testing.
         store_data(DATASET, dc)
         model.store_metadata(DATASET, url, yml)
 

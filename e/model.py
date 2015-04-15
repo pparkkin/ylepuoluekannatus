@@ -24,11 +24,7 @@ def store_metadata(dataset, url, yml):
     m.put()
 
 def fetch_metadata(dataset):
-    ms = MetaData.query(ancestor=pkdata_key(dataset)).fetch()
-    if len(ms) > 0:
-        return (ms[0].url, ms[0].yml)
-    else:
-        return (None, None)
+    return MetaData.query(ancestor=pkdata_key(dataset)).get()
 
 ## Actual data sets
 
@@ -39,7 +35,7 @@ class Datapoint(ndb.Model):
 class Party(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     color = ndb.StringProperty(indexed=False)
-    data = ndb.StructuredProperty(Datapoint, repeated=True)
+    data = ndb.StructuredProperty(Datapoint, repeated=True, indexed=False)
 
 def clear_data(dataset=None):
     # clear db
@@ -66,12 +62,31 @@ def store_data(dataset, data):
         p = Party(parent=key, name=n, color=c)
         raw = _clean_raw(pi['datapoints'])
         data = [Datapoint(parent=key, date=t, value=v) for t, v in raw]
-        for d in data: d.put()
+        ndb.put_multi(data)
         p.data = data
         p.put()
 
 def fetch_data(dataset):
     return Party.query(ancestor=pkdata_key(dataset)).fetch()
 
+def _copy_datapoints(ds, dataset):
+    key = pkdata_key(dataset)
+    return [Datapoint(parent=key, date=d.date, value=d.value) for d in ds]
 
+def _copy_party(party, dataset):
+    data = _copy_datapoints(party.data, dataset)
+    return Party(parent=pkdata_key(dataset), name=party.name, color=party.color, data=data)
+
+def copy_data(from_ds, to_ds):
+    clear_data(to_ds)
+
+    ps = fetch_data(from_ds)
+    for p in ps:
+        np = _copy_party(p, to_ds)
+        ndb.put_multi(np.data)
+        np.put()
+
+    md = fetch_metadata(from_ds)
+    nmd = MetaData(parent=pkdata_key(to_ds), url=md.url, yml=md.yml)
+    nmd.put()
 

@@ -15,7 +15,7 @@ LIVE_DATASET = 'live'
 
 class NewDataPreview(webapp2.RequestHandler):
     def get(self):
-        (url, yml) = model.fetch_metadata(PREVIEW_DATASET)
+        m = model.fetch_metadata(PREVIEW_DATASET)
 
         # Rickshaw data looks like this:
         # series:
@@ -32,8 +32,8 @@ class NewDataPreview(webapp2.RequestHandler):
         data = model.fetch_data(PREVIEW_DATASET)
 
         template_values = {
-            'url': url,
-            'yml': yml,
+            'url': m.url,
+            'yml': m.yml,
             'data': data,
         }
 
@@ -47,7 +47,8 @@ class NewDataPreview(webapp2.RequestHandler):
         if resp == "Cancel":
             self.redirect('/new')
         if resp == "Commit":
-            pass
+            model.copy_data(PREVIEW_DATASET, LIVE_DATASET)
+            self.redirect('/')
 
 
 application = webapp2.WSGIApplication([
