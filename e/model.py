@@ -51,8 +51,10 @@ def clear_data(dataset=None):
 def _clean_raw(raw):
     tformat = '%Y/%m/%d'
 
-    raw = sorted(raw, key=lambda tv: tv[0])
-    return [(datetime.strptime(t, tformat), v) for t, v in raw]
+    sd = sorted(raw, key=lambda tv: tv[0])
+    cd = [(datetime.strptime(t, tformat), v) for t, v in sd]
+    fd = [(t, v) for t, v in cd if t.year >= 2006]
+    return fd
 
 def store_data(dataset, data):
     key = pkdata_key(dataset)
