@@ -78,7 +78,7 @@ class NewDataSource(webapp2.RequestHandler):
         #yml = file('pk.yaml').read()
 
         dc = scrape_data(url, yml)
-        model.clear_data()
+        model.clear_data(DATASET)
         store_data(DATASET, dc)
         model.store_metadata(DATASET, url, yml)
 

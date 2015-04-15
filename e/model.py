@@ -59,12 +59,13 @@ def _clean_raw(raw):
     return [(datetime.strptime(t, tformat), v) for t, v in raw]
 
 def store_data(dataset, data):
+    key = pkdata_key(dataset)
     for pi in data:
         n = pi['name']
         c = pi['color']
-        p = Party(parent=pkdata_key(dataset), name=n, color=c)
+        p = Party(parent=key, name=n, color=c)
         raw = _clean_raw(pi['datapoints'])
-        data = [Datapoint(date=t, value=v) for t, v in raw]
+        data = [Datapoint(parent=key, date=t, value=v) for t, v in raw]
         for d in data: d.put()
         p.data = data
         p.put()
