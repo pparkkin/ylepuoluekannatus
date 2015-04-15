@@ -1,8 +1,10 @@
 <html>
     <body>
         {% include "graph.html" %}
-        <div>{{ url }}</div>
-        <div><pre>{{ yml }}</pre></div>
+        <form action="/preview" method="POST">
+            <input type="submit" name="resp" value="Cancel" />
+            <input type="submit" name="resp" value="Commit" />
+        </form>
     </body>
     {% include "graph_footer.html" %}
 </html>

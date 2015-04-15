@@ -41,6 +41,14 @@ class NewDataPreview(webapp2.RequestHandler):
 
         self.response.write(template.render(template_values))
 
+    def post(self):
+        resp = self.request.get('resp')
+
+        if resp == "Cancel":
+            self.redirect('/new')
+        if resp == "Commit":
+            pass
+
 
 application = webapp2.WSGIApplication([
     ('/preview', NewDataPreview),
