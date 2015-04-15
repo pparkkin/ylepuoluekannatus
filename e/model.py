@@ -48,13 +48,20 @@ def clear_data(dataset=None):
         ndb.delete_multi(Party.query().fetch(keys_only=True))
         ndb.delete_multi(MetaData.query().fetch(keys_only=True))
 
+def _uniq_by_ts(tvs):
+    if len(tvs) == 0: return []
+    if len(tvs) == 1: return tvs
+    if tvs[0][0] == tvs[1][0]: return _uniq_by_ts(tvs[1:])
+    return [tvs[0]] + _uniq_by_ts(tvs[1:])
+
 def _clean_raw(raw):
     tformat = '%Y/%m/%d'
 
     sd = sorted(raw, key=lambda tv: tv[0])
     cd = [(datetime.strptime(t, tformat), v) for t, v in sd]
     fd = [(t, v) for t, v in cd if t.year >= 2006]
-    return fd
+    ud = _uniq_by_ts(fd)
+    return ud
 
 def store_data(dataset, data):
     key = pkdata_key(dataset)
