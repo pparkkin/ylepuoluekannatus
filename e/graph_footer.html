@@ -27,6 +27,25 @@ var legend = new Rickshaw.Graph.Legend({
     graph: graph
 });
 
+var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+var y_axis = new Rickshaw.Graph.Axis.Y( {
+        graph: graph,
+        orientation: 'left',
+        tickFormat: function (y) { return y + "%"; },
+        element: document.getElementById('y_axis'),
+} );
+
 graph.render();
-  </script>
+
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+	graph: graph,
+	formatter: function(series, x, y) {
+		var date = '<span class="date">' + new Date(x * 1000).toDateString() + '</span>';
+		var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+		var content = swatch + series.name + ": " + y + '%<br>' + date;
+		return content;
+	}
+} );
+
+</script>
 
