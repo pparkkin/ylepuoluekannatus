@@ -1,3 +1,4 @@
+# coding: utf8
 import operator
 
 from lxml import html
@@ -55,9 +56,10 @@ def to_float_list(ts):
 def results_from_row(row):
     tds = row.getchildren()
     if len(tds) < 2: return None
-    ptd = tds[0]
+    ptd = text_value(tds[0])
+    ptd = ptd if ptd != u'Vihreät' else 'VIHR'
     vtds = tds[1:]
-    return (text_value(ptd), to_float_list([text_value(vtd) for vtd in vtds]))
+    return (ptd, to_float_list([text_value(vtd) for vtd in vtds]))
 
 # extract values from the rows
 def compile_results(rs):
