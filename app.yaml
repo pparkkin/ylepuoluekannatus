@@ -11,12 +11,12 @@ handlers:
   static_dir: rickshaw
 - url: /new
   script: new.application
+  login: admin
 - url: /preview
   script: preview.application
+  login: admin
 - url: /
   script: main.application
-- url: /test
-  script: e.application
 
 # [START libraries]
 libraries:
