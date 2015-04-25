@@ -64,8 +64,8 @@ class NewDataSource(webapp2.RequestHandler):
         m = model.fetch_metadata(DATASET)
 
         template_values = {
-            'url': m.url,
-            'yml': m.yml,
+            'url': m.url if m != None else '',
+            'yml': m.yml if m != None else '',
         }
 
         template = JINJA_ENVIRONMENT.get_template('new.html')
