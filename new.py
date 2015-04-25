@@ -1,5 +1,7 @@
 import os
 
+from google.appengine.api import urlfetch
+
 import webapp2
 import jinja2
 
@@ -43,7 +45,9 @@ pcolors = [
 
 def scrape_data(url, yml):
     dc = DataCollector()
-    pkscraper.scrape(dc, url, yml)
+    res = urlfetch.fetch(url)
+    if res.status_code == 200:
+        pkscraper.scrape(dc, res.content, yml)
     return dc
 
 def store_data(dataset, dc):

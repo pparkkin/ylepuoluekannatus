@@ -15,8 +15,8 @@ def scrape_xpath(pk, tree, d):
         d['head'] = tree.xpath(d['xpath'])
         print d['head']
 
-def scrape(pk, url, yml):
-    tree = html.parse(url)
+def scrape(pk, h, yml):
+    tree = html.fromstring(h)
     descr = yaml.load_all(yml)
     for d in descr:
         scrape_xpath(pk, tree, d)
