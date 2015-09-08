@@ -44,7 +44,7 @@ def text_value(td):
 def to_float_list(ts):
     fs = []
     ts = [s.strip() for s in ts]
-    ts = filter(lambda s: len(s) > 1, ts)
+    #ts = filter(lambda s: len(s) > 1, ts)
     for t in ts:
         try:
             fs.append(float(t.replace(',', '.')))
@@ -59,6 +59,8 @@ def results_from_row(row):
     ptd = text_value(tds[0])
     ptd = ptd if ptd != u'Vihreät' else 'VIHR'
     vtds = tds[1:]
+    #print ptd, # debug
+    #print [text_value(vtd) for vtd in vtds] # debug
     return (ptd, to_float_list([text_value(vtd) for vtd in vtds]))
 
 # extract values from the rows
@@ -71,6 +73,7 @@ def scrape(pk, tree, d):
     results = compile_results(results_from(fstchld))
     #print d['year']
     for p, vs in results:
+        #print p, len(vs), vs # debug
         for t, v in zip(d['dates'], vs):
             pk.add_point(t, p, v)
 
