@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <link href="static/c3/c3.css" rel="stylesheet" type="text/css">
+        <link href="static/css/index.css" rel="stylesheet" type="text/css">
+
+        <script src="static/js/jquery.js"></script>
+        <script src="static/js/papaparse.js"></script>
+        <script src="static/d3/d3.js"></script>
+        <script src="static/c3/c3.js"></script>
+        <script src="static/js/jstat.js"></script>
+
+        <script src="static/js/index.js"></script>
+    </head>
+    <body>
+        <div class="tabs">
+            <ul class="tab-links">
+                <li class="active"><a href="#line-chart-tab">Line Chart</a></li>
+                <li><a href="#scatterplot-tab">Scatterplot</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="line-chart-tab" class="tab active">
+                    <div id="line-chart"></div>
+                </div>
+                <div id="scatterplot-tab" class="tab">
+                    <div id="scatterplot-matrix">
+                    </div>
+                    <table id="rhos"></table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+

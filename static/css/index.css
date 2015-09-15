@@ -1,0 +1,91 @@
+/* Tabs */
+
+html {
+    background: wheat;
+    font-family: sans-serif;
+}
+
+.tabs {
+    width: 100%;
+    display: inline-block;
+}
+
+.tab-links {
+    margin-bottom: 0px;
+}
+
+.tab-links:after {
+    display: block;
+    clear: both;
+    content: '';
+}
+
+.tab-links li {
+    margin: 0px 5px;
+    float: left;
+    list-style: none;
+}
+
+.tab-links a {
+    padding: 9px 15px;
+    display: inline-block;
+    border-radius: 3px 3px 0px 0px;
+    background: darkgrey;
+    color: white;
+    transition: all linear 0.15s;
+    text-decoration: none;
+}
+
+.tab-links a:hover {
+    background: darkgrey;
+}
+
+li.active a, li.active a:hover {
+    background: lightgrey;
+    color: black;
+}
+
+.tab-content {
+    padding: 15px;
+    border-radius: 3px;
+    box-shadow: -1px 1px 1px rgba(0,0,0,0.15);
+    background: white;
+}
+
+.tab {
+    display: none;
+}
+
+.tab.active {
+    display: block;
+}
+
+
+/* Graphs */
+
+#scatterplot-matrix .tick {
+    display: none;
+}
+
+#scatterplot-matrix {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#rhos {
+    width: 80%;
+    margin: 0px auto;
+}
+
+#rhos td {
+    text-align: center;
+}
+
+#rhos td.strongpos {
+    color: dodgerblue;
+}
+
+#rhos td.strongneg {
+    color: hotpink;
+}
+

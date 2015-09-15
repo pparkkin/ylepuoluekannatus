@@ -1,32 +1,20 @@
 application: puoluekannatus
-version: 1
+version: 2
 runtime: python27
 api_version: 1
 threadsafe: true
 
 handlers:
-- url: /css
-  static_dir: css
-- url: /rickshaw
-  static_dir: rickshaw
-- url: /new
-  script: new.application
-  login: admin
-- url: /preview
-  script: preview.application
-  login: admin
-- url: /
-  script: main.application
+- url: /static
+  static_dir: static
+- url: /.*
+  script: main.app
 
 # [START libraries]
 libraries:
 - name: webapp2
   version: latest
 - name: jinja2
-  version: latest
-- name: lxml
-  version: latest
-- name: yaml
   version: latest
 # [END libraries]
 
