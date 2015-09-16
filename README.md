@@ -1,4 +1,4 @@
-# YLE Puolukannatus Viewer
+# YLE Puoluekannatus Viewer
 
 A Google App Engine project to graph YLE party poll data.
 
