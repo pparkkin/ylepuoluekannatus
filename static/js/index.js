@@ -1,13 +1,14 @@
 
 function handleData(data, fields) {
-    var keys = fields.filter(function(f) { return f != "TIMESTAMP"; });
+    var keys = fields
     var rows = data
         .map(function(o) {
             return keys.map(function(k) { return o[k]; });
         })
         .filter(function(r) {
+            // Filter empty rows
             // Papa Parse returns an empty string ("") for missing values.
-            return r.some(function(v) { return v !== ""; });
+            return r.slice(1).some(function(v) { return v !== ""; });
         });
     drawLineChart(keys, rows);
     drawScatterplotMatrix(keys, rows);
@@ -17,16 +18,26 @@ function drawLineChart(keys, rows) {
     var chart = c3.generate({
         bindto: "#line-chart",
         data: {
+            x: 'TIMESTAMP',
             rows: [keys].concat(rows)
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: { format: '%Y-%m-%d' }
+            }
         },
         point: { r: 1.5 }
     });
 };
 
 function drawScatterplotMatrix(keys, rows) {
+    // keys = keys[1:] (remove TIMESTAMP)
+    var keys = keys.slice(1);
     var cols = keys
         .map(function(k, i) {
-            return rows.map(function(r) { return r[i]; });
+            // i+1 to skip TIMESTAMP column
+            return rows.map(function(r) { return r[i+1]; });
         });
     drawScatterplots(keys, cols);
     drawCoefficientTable(keys, cols);
