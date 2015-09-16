@@ -1,14 +1,19 @@
 
 function handleData(data, fields) {
-    drawLineChart(data, fields);
-    drawScatterplotMatrix(data, fields);
+    var keys = fields.filter(function(f) { return f != "TIMESTAMP"; });
+    var rows = data
+        .map(function(o) {
+            return keys.map(function(k) { return o[k]; });
+        })
+        .filter(function(r) {
+            // Papa Parse returns an empty string ("") for missing values.
+            return r.some(function(v) { return v !== ""; });
+        });
+    drawLineChart(keys, rows);
+    drawScatterplotMatrix(keys, rows);
 }
 
-function drawLineChart(data, fields) {
-    var keys = fields.filter(function(f) { return f != "TIMESTAMP"; });
-    var rows = data.map(function(o) {
-        return keys.map(function(k) { return o[k]; });
-    });
+function drawLineChart(keys, rows) {
     var chart = c3.generate({
         bindto: "#line-chart",
         data: {
@@ -18,11 +23,11 @@ function drawLineChart(data, fields) {
     });
 };
 
-function drawScatterplotMatrix(data, fields) {
-    var keys = fields.filter(function(f) { return f != "TIMESTAMP"; });
-    var cols = keys.map(function(k) {
-        return data.map(function(o) { return o[k]; });
-    });
+function drawScatterplotMatrix(keys, rows) {
+    var cols = keys
+        .map(function(k, i) {
+            return rows.map(function(r) { return r[i]; });
+        });
     drawScatterplots(keys, cols);
     drawCoefficientTable(keys, cols);
 }
