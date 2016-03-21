@@ -1,12 +1,14 @@
 <html>
     <head>
         <link href="static/c3/c3.css" rel="stylesheet" type="text/css">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/plottable.js/2.0.0/plottable.css" rel="stylesheet" type="text/css">
         <link href="static/css/index.css" rel="stylesheet" type="text/css">
 
         <script src="static/js/jquery.js"></script>
         <script src="static/js/papaparse.js"></script>
         <script src="static/d3/d3.js"></script>
         <script src="static/c3/c3.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/plottable.js/2.0.0/plottable.min.js"></script>
         <script src="static/js/jstat.js"></script>
 
         <script src="static/js/index.js"></script>
@@ -21,7 +23,10 @@
 
             <div class="tab-content">
                 <div id="line-chart-tab" class="tab active">
+                    <!--
                     <div id="line-chart"></div>
+                    --!>
+                    <svg height="300" id="example"></svg>
                 </div>
                 <div id="scatterplot-tab" class="tab">
                     <div id="scatterplot-matrix">

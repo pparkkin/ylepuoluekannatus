@@ -1,5 +1,13 @@
 
+function partyColor(party) {
+    return "#1e90ff";
+}
+
 function handleData(data, fields) {
+    console.log(data);
+    console.log(fields);
+    
+    /*
     var keys = fields
     var rows = data
         .map(function(o) {
@@ -12,6 +20,7 @@ function handleData(data, fields) {
         });
     drawLineChart(keys, rows);
     drawScatterplotMatrix(keys, rows);
+    */
 }
 
 function drawLineChart(keys, rows) {
@@ -161,6 +170,50 @@ function floatCompare(a, b) {
     return a - b;
 }
 
+function makeBasicChart() {
+
+    var xScale = new Plottable.Scales.Time();
+    var yScale = new Plottable.Scales.Linear();
+
+    var xAxis = new Plottable.Axes.Time(xScale, "bottom");
+    var yAxis = new Plottable.Axes.Numeric(yScale, "left");
+
+    var plots = new Plottable.Components.Group();
+
+    var table = new Plottable.Components.Table([
+        [yAxis, plots],
+        [null, xAxis]
+    ]);
+
+    table.renderTo("svg#example");
+
+    var colorScale = new Plottable.Scales.Color();
+
+    d3.csv("/pk.csv", function (error, data) {
+        console.log(data);
+        var parseDate = d3.time.format("%Y-%m-%d").parse;
+        var partyNames = d3.keys(data[0]).filter(function (key) { return key !== "TIMESTAMP"; });
+        var parties = partyNames.map(function (name) {
+            return data.map(function (d) {
+                return { date: parseDate(d.TIMESTAMP), value: parseFloat(d[name]), name: name };
+            });
+        });
+
+        parties.forEach(function (party) {
+            plots.append(new Plottable.Plots.Line()
+                    .addDataset(new Plottable.Dataset(party))
+                    .x(function (d) { return d.date; }, xScale)
+                    .y(function (d) { return d.value; }, yScale)
+                    .attr("stroke", colorScale.scale(party[0].name))
+                    .attr("stroke-width", 1)
+                    .autorangeMode("y")
+                    );
+        });
+    });
+
+}
+
+
 $(function() {
     console.log("Hello, World!")
 
@@ -177,6 +230,7 @@ $(function() {
     });
 
     // Fetch and parse CSV + handle
+    /*
     Papa.parse("/pk.csv", {
         download: true,
         header: true,
@@ -185,4 +239,8 @@ $(function() {
             handleData(results.data, results.meta.fields);
         }
     });
+    */
+
+    makeBasicChart();
+
 });
