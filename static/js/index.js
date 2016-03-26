@@ -235,6 +235,13 @@ function makeScatterPlotMatrix() {
 
     table.renderTo("svg#scatter");
 
+    // doesn't work because the tab is hidden
+    var w = $("#scatter").parent().width();
+    console.log(w);
+    $("#scatter").attr("width", w);
+    $("#scatter").attr("height", w);
+    table.redraw();
+
     return {
         plot: table
     };
