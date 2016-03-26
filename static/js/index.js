@@ -6,7 +6,7 @@ function partyColor(party) {
 function handleData(data, fields) {
     console.log(data);
     console.log(fields);
-    
+
     /*
     var keys = fields
     var rows = data
@@ -170,27 +170,114 @@ function floatCompare(a, b) {
     return a - b;
 }
 
-function makeBasicChart() {
-
+function makeLinePlotGroup() {
+    // Line Charts
     var xScale = new Plottable.Scales.Time();
     var yScale = new Plottable.Scales.Linear();
 
     var xAxis = new Plottable.Axes.Time(xScale, "bottom");
     var yAxis = new Plottable.Axes.Numeric(yScale, "left");
 
+    var colorScale = new Plottable.Scales.Color();
+
     var plots = new Plottable.Components.Group();
+    var legend = new Plottable.Components.Legend(colorScale);
+    legend.maxEntriesPerRow(Infinity);
 
     var table = new Plottable.Components.Table([
         [yAxis, plots],
-        [null, xAxis]
+        [null, xAxis],
+        [null, legend]
     ]);
 
-    table.renderTo("svg#example");
+    table.renderTo("svg#line");
 
-    var colorScale = new Plottable.Scales.Color();
+    return {
+        plots: plots,
+        xScale: xScale,
+        yScale: yScale,
+        colorScale: colorScale
+    };
+}
+
+function addLinePlots(group, parties) {
+    var plots = group.plots;
+    var xScale = group.xScale;
+    var yScale = group.yScale;
+    var colorScale = group.colorScale;
+
+    parties.forEach(function (party) {
+        var line = new Plottable.Plots.Line()
+                .addDataset(new Plottable.Dataset(party, { name: party[0].name }))
+                .x(function (d) { return d.date; }, xScale)
+                .y(function (d) { return d.value; }, yScale)
+                .attr("stroke", function(d) { return d.name; }, colorScale)
+                .attr("stroke-width", 1)
+                .autorangeMode("y");
+        var scatter = new Plottable.Plots.Scatter()
+                .addDataset(new Plottable.Dataset(party, { name: party[0].name }))
+                .x(function (d) { return d.date; }, xScale)
+                .y(function (d) { return d.value; }, yScale)
+                .attr("stroke", function(d) { return d.name; }, colorScale)
+                .attr("fill", function(d) { return d.name; }, colorScale)
+                .attr("opacity", 1)
+                .size(2);
+
+        plots.append(line);
+        plots.append(scatter);
+    });
+}
+
+function makeScatterPlotMatrix() {
+    var table = new Plottable.Components.Table();
+
+    table.renderTo("svg#scatter");
+
+    return {
+        plot: table
+    };
+
+}
+
+function addScatterPlots(spm, parties) {
+    var table = spm.plot;
+
+    var data = parties.map(function (p) {
+        return parties.map(function (r) {
+            return p.map(function (_, k) {
+                return { x: r[k].value, y: p[k].value };
+            });
+        });
+    });
+
+    data.forEach(function (row, i) {
+        row.forEach(function (col, j) {
+            var xScale = new Plottable.Scales.Linear();
+            var yScale = new Plottable.Scales.Linear();
+
+            var xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
+            var yAxis = new Plottable.Axes.Numeric(yScale, "left");
+
+            var plot = new Plottable.Plots.Scatter()
+                .addDataset(new Plottable.Dataset(data[i][j]))
+                .x(function (d) { return d.x; }, xScale)
+                .y(function (d) { return d.y; }, yScale);
+
+            table.add(new Plottable.Components.Table(
+                        [[yAxis, plot],
+                         [null, xAxis]]), i, j);
+        });
+    });
+
+}
+
+function makeCharts() {
+
+    var group = makeLinePlotGroup();
+    var spm = makeScatterPlotMatrix();
 
     d3.csv("/pk.csv", function (error, data) {
-        console.log(data);
+//        console.log(data);
         var parseDate = d3.time.format("%Y-%m-%d").parse;
         var partyNames = d3.keys(data[0]).filter(function (key) { return key !== "TIMESTAMP"; });
         var parties = partyNames.map(function (name) {
@@ -199,16 +286,8 @@ function makeBasicChart() {
             });
         });
 
-        parties.forEach(function (party) {
-            plots.append(new Plottable.Plots.Line()
-                    .addDataset(new Plottable.Dataset(party))
-                    .x(function (d) { return d.date; }, xScale)
-                    .y(function (d) { return d.value; }, yScale)
-                    .attr("stroke", colorScale.scale(party[0].name))
-                    .attr("stroke-width", 1)
-                    .autorangeMode("y")
-                    );
-        });
+        addLinePlots(group, parties);
+        addScatterPlots(spm, parties);
     });
 
 }
@@ -229,18 +308,6 @@ $(function() {
         e.preventDefault();
     });
 
-    // Fetch and parse CSV + handle
-    /*
-    Papa.parse("/pk.csv", {
-        download: true,
-        header: true,
-        dynamicTyping: true,
-        complete: function(results) {
-            handleData(results.data, results.meta.fields);
-        }
-    });
-    */
-
-    makeBasicChart();
+    makeCharts();
 
 });

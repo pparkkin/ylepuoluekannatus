@@ -1,9 +1,13 @@
-/* Tabs */
-
 html {
     background: wheat;
     font-family: sans-serif;
 }
+
+.borderful {
+    outline: thin solid lightgrey;
+}
+
+/* Tabs */
 
 .tabs {
     width: 100%;
