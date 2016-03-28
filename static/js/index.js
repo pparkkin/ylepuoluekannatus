@@ -1,72 +1,7 @@
 
-function partyColor(party) {
-    return "#1e90ff";
-}
+var WIDTH_FACTOR = 0.9;
 
-function handleData(data, fields) {
-    console.log(data);
-    console.log(fields);
-
-    /*
-    var keys = fields
-    var rows = data
-        .map(function(o) {
-            return keys.map(function(k) { return o[k]; });
-        })
-        .filter(function(r) {
-            // Filter empty rows
-            // Papa Parse returns an empty string ("") for missing values.
-            return r.slice(1).some(function(v) { return v !== ""; });
-        });
-    drawLineChart(keys, rows);
-    drawScatterplotMatrix(keys, rows);
-    */
-}
-
-function drawLineChart(keys, rows) {
-    var chart = c3.generate({
-        bindto: "#line-chart",
-        data: {
-            x: 'TIMESTAMP',
-            rows: [keys].concat(rows)
-        },
-        axis: {
-            x: {
-                type: 'timeseries',
-                tick: { format: '%Y-%m-%d' }
-            }
-        },
-        point: { r: 1.5 }
-    });
-};
-
-function drawScatterplotMatrix(keys, rows) {
-    // keys = keys[1:] (remove TIMESTAMP)
-    var keys = keys.slice(1);
-    var cols = keys
-        .map(function(k, i) {
-            // i+1 to skip TIMESTAMP column
-            return rows.map(function(r) { return r[i+1]; });
-        });
-    drawScatterplots(keys, cols);
-    drawCoefficientTable(keys, cols);
-}
-
-function drawScatterplots(keys, cols) {
-    for (var i = 0; i < keys.length; i++) {
-        for (var j = 0; j < keys.length; j++) {
-            var spname = "scatterplot_" + i + "_" + j;
-            var spdiv = '<div id="' + spname + '"></div>';
-            $("#scatterplot-matrix").append(spdiv);
-            if (i == j) {
-                drawHistogram(spname, keys[i], cols[i]);
-            } else {
-                drawScatterplot(spname, keys[i], keys[j], cols[i], cols[j]);
-            }
-        }
-    }
-}
-
+/*
 function drawCoefficientTable(keys, cols) {
     var th = '<tr id="rhos-th"></tr>';
     $("#rhos").append(th);
@@ -103,72 +38,7 @@ function rhoTd(r) {
     }
     return td;
 }
-
-
-function drawScatterplot(div, key1, key2, data1, data2) {
-    var xs = {};
-    xs[key2] = key1;
-    var columns = [
-        [key1].concat(data1),
-        [key2].concat(data2)
-    ];
-    var plot = c3.generate({
-        bindto: "#"+div,
-        data: {
-            xs: xs,
-            columns: columns,
-            type: "scatter"
-        },
-        axis: {
-            x: { label: key1 },
-            y: { label: key2 }
-        },
-        legend: { show: false },
-        tooltip: {
-            contents: function(d) {
-                var out = '<table class="c3-tooltip">';
-                out += "<tr>";
-                out += '<td class="name">' + key1 + '</td>';
-                out += '<td class="value">' + d[0]["x"] + "</td>";
-                out += "</tr>";
-                out += "<tr>";
-                out += '<td class="name">' + key2 + '</td>';
-                out += '<td class="value">' + d[0]["value"] + "</td>";
-                out += "</tr>";
-                out += "</table>";
-                return out;
-            }
-        },
-        size: {
-            width: $(window).width()/10,
-            height: $(window).width()/10
-        }
-    });
-
-}
-
-function drawHistogram(div, key, data) {
-    var cols = jStat.histogram(data, 10);
-
-    var plot = c3.generate({
-        bindto: "#"+div,
-        size: {
-            width: $(window).width()/10,
-            height: $(window).width()/10
-        },
-        legend: { show: false },
-        tooltip: { show: false },
-        data: {
-            columns: [[key].concat(cols)],
-            type: 'bar'
-        }
-    });
-
-}
-
-function floatCompare(a, b) {
-    return a - b;
-}
+*/
 
 function makeLinePlotGroup() {
     // Line Charts
@@ -193,6 +63,9 @@ function makeLinePlotGroup() {
     ]);
 
     table.renderTo("svg#line");
+
+    var w = $("#line").parent().width();
+    $("#line").attr("width", WIDTH_FACTOR * w);
 
     return {
         plots: plots,
@@ -235,11 +108,9 @@ function makeScatterPlotMatrix() {
 
     table.renderTo("svg#scatter");
 
-    // doesn't work because the tab is hidden
     var w = $("#scatter").parent().width();
-    console.log(w);
-    $("#scatter").attr("width", w);
-    $("#scatter").attr("height", w);
+    $("#scatter").attr("width", WIDTH_FACTOR * w);
+    $("#scatter").attr("height", WIDTH_FACTOR * w);
     table.redraw();
 
     return {
