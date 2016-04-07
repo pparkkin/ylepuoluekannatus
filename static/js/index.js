@@ -125,7 +125,7 @@ function addScatterPlots(spm, parties) {
     var data = parties.map(function (p) {
         return parties.map(function (r) {
             return p.map(function (_, k) {
-                return { x: r[k].value, y: p[k].value };
+                return { x: r[k].value, y: p[k].value, date: r[k].date };
             });
         });
     });
@@ -138,17 +138,68 @@ function addScatterPlots(spm, parties) {
             var xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
             var yAxis = new Plottable.Axes.Numeric(yScale, "left");
 
-            var plot = new Plottable.Plots.Scatter()
-                .addDataset(new Plottable.Dataset(data[i][j]))
-                .x(function (d) { return d.x; }, xScale)
-                .y(function (d) { return d.y; }, yScale);
+            var plot = new Plottable.Plots.Scatter();
+            var ds = new Plottable.Dataset(data[i][j]);
+            plot.addDataset(ds)
+                .x(function (d, i, ds) {
+                    var md = ds.metadata();
+                    if (!md.left || !md.right) return d.x;
+                    if (md.left < d.date && d.date < md.right) return d.x;
+                    return null;
+                }, xScale)
+                .y(function (d, i, ds) {
+                    var md = ds.metadata();
+                    if (!md.left || !md.right) return d.y;
+                    if (md.left < d.date && d.date < md.right) return d.y;
+                    return null;
+                }, yScale);
 
             table.add(new Plottable.Components.Table(
                         [[yAxis, plot],
                          [null, xAxis]]), i, j);
+
         });
     });
 
+}
+
+function scatterplotAt(spm, r, c) {
+    var t = spm.componentAt(r, c);
+    if (!t) {
+        console.error("Scatter plot table "+t+" at ("+r+", "+c+")");
+        return null;
+    }
+    var p = t.componentAt(0, 1);
+    return p;
+}
+
+function addDragBox(group, spm) {
+    var dragbox = new Plottable.Components.XDragBoxLayer();
+    var xScale = group.xScale;
+    dragbox.onDragEnd(function (box) {
+        var left = box.topLeft.x;
+        var right = box.bottomRight.x;
+        var leftD = xScale.invert(left);
+        var rightD = xScale.invert(right);
+        console.log({ left: leftD, right: rightD });
+
+        var nr = spm.plot._nRows;
+        var nc = spm.plot._nCols;
+        for (var r = 0; r < nr; r++) {
+            for (var c = 0; c < nc; c++) {
+                var sp = scatterplotAt(spm.plot, r, c);
+                if (!sp) {
+                    continue;
+                }
+                var ds = sp.datasets();
+                var md = ds[0].metadata();
+                md.left = leftD;
+                md.right = rightD;
+                ds[0].metadata(md);
+            }
+        }
+    });
+    group.plots.append(dragbox);
 }
 
 function makeCharts() {
@@ -168,6 +219,7 @@ function makeCharts() {
 
         addLinePlots(group, parties);
         addScatterPlots(spm, parties);
+        addDragBox(group, spm);
     });
 
 }
@@ -177,6 +229,7 @@ $(function() {
     console.log("Hello, World!")
 
     // Tabs
+    /*
     $('.tabs .tab-links a').on('click', function(e) {
         var curHref = $(this).attr('href');
         $('.tabs ' + curHref)
@@ -187,6 +240,7 @@ $(function() {
             .siblings().removeClass('active');
         e.preventDefault();
     });
+    */
 
     makeCharts();
 
