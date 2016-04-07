@@ -179,10 +179,11 @@ function addDragBox(group, spm) {
     dragbox.onDragEnd(function (box) {
         var left = box.topLeft.x;
         var right = box.bottomRight.x;
-        var leftD = xScale.invert(left);
-        var rightD = xScale.invert(right);
-        console.log({ left: leftD, right: rightD });
+        //console.log({ left: left, right: right });
+        var clear = false;
+        if (left == right) clear = true;
 
+        //console.log(clear);
         var nr = spm.plot._nRows;
         var nc = spm.plot._nCols;
         for (var r = 0; r < nr; r++) {
@@ -192,10 +193,17 @@ function addDragBox(group, spm) {
                     continue;
                 }
                 var ds = sp.datasets();
-                var md = ds[0].metadata();
-                md.left = leftD;
-                md.right = rightD;
-                ds[0].metadata(md);
+                if (clear) {
+                    ds[0].metadata({});
+                } else {
+                    var leftD = xScale.invert(left);
+                    var rightD = xScale.invert(right);
+                    //console.log({ left: leftD, right: rightD });
+                    var md = ds[0].metadata();
+                    md.left = leftD;
+                    md.right = rightD;
+                    ds[0].metadata(md);
+                }
             }
         }
     });
