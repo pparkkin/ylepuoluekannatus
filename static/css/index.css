@@ -14,8 +14,12 @@ nav.top-nav a.page-title {
     margin-top: 85px;
 }
 
-#scatter-plot-container {
+#scatter-plot-switch {
     margin-top: 85px;
+}
+
+#scatter-plot-container {
+    margin-top: 45px;
 }
 
 /* Graphs */
