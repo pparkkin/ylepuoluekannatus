@@ -125,7 +125,7 @@ function addScatterPlots(spm, parties) {
     var data = parties.map(function (p) {
         return parties.map(function (r) {
             return p.map(function (_, k) {
-                return { x: r[k].value, y: p[k].value, date: r[k].date };
+                return { x: r[k].value, y: p[k].value, date: r[k].date, party: r[k].name };
             });
         });
     });
@@ -138,21 +138,38 @@ function addScatterPlots(spm, parties) {
             var xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
             var yAxis = new Plottable.Axes.Numeric(yScale, "left");
 
-            var plot = new Plottable.Plots.Scatter();
-            var ds = new Plottable.Dataset(data[i][j]);
-            plot.addDataset(ds)
-                .x(function (d, i, ds) {
-                    var md = ds.metadata();
-                    if (!md.left || !md.right) return d.x;
-                    if (md.left < d.date && d.date < md.right) return d.x;
-                    return null;
-                }, xScale)
-                .y(function (d, i, ds) {
-                    var md = ds.metadata();
-                    if (!md.left || !md.right) return d.y;
-                    if (md.left < d.date && d.date < md.right) return d.y;
-                    return null;
-                }, yScale);
+            var plot = null;
+
+            if (i < j) {
+                var ds = new Plottable.Dataset(data[i][j]);
+                plot = new Plottable.Plots.Scatter()
+                    .addDataset(ds)
+                    .x(function (d, i, ds) {
+                        var md = ds.metadata();
+                        if (!md.left || !md.right) return d.x;
+                        if (md.left < d.date && d.date < md.right) return d.x;
+                        return null;
+                    }, xScale)
+                    .y(function (d, i, ds) {
+                        var md = ds.metadata();
+                        if (!md.left || !md.right) return d.y;
+                        if (md.left < d.date && d.date < md.right) return d.y;
+                        return null;
+                    }, yScale);
+            } else if (i == j) {
+                plot = new Plottable.Components.TitleLabel()
+                    .text(data[i][j][0].party);
+            } else {
+                var xs = data[i][j]
+                    .map(function (d) { return d.x; })
+                    .filter(function (v) { return !isNaN(v); });
+                var ys = data[i][j]
+                    .map(function (d) { return d.y; })
+                    .filter(function (v) { return !isNaN(v); });
+                var r = jStat.corrcoeff(xs, ys);
+                plot = new Plottable.Components.TitleLabel()
+                    .text(r.toFixed(2));
+            }
 
             table.add(new Plottable.Components.Table(
                         [[yAxis, plot],
