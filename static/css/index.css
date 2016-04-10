@@ -1,80 +1,24 @@
-html {
-    background: wheat;
-    font-family: sans-serif;
+body {
+    background-color: #eceff1;
 }
 
-.borderful {
-    outline: thin solid lightgrey;
+nav.top-nav a.page-title {
+    font-size: 36px;
 }
 
-/* Tabs */
-
-.tabs {
-    width: 100%;
-    display: inline-block;
+.container {
+    width: 80%;
 }
 
-.tab-links {
-    margin-bottom: 0px;
+#line-plot-container {
+    margin-top: 85px;
 }
 
-.tab-links:after {
-    display: block;
-    clear: both;
-    content: '';
+#scatter-plot-container {
+    margin-top: 85px;
 }
-
-.tab-links li {
-    margin: 0px 5px;
-    float: left;
-    list-style: none;
-}
-
-.tab-links a {
-    padding: 9px 15px;
-    display: inline-block;
-    border-radius: 3px 3px 0px 0px;
-    background: lightgrey;
-    color: white;
-    transition: all linear 0.15s;
-    text-decoration: none;
-}
-
-.tab-links a:hover {
-    background: darkgrey;
-}
-
-li.active a, li.active a:hover {
-    background: white;
-    color: black;
-}
-
-.content {
-    padding: 15px;
-    border-radius: 3px;
-    box-shadow: -1px 1px 1px rgba(0,0,0,0.15);
-    background: white;
-}
-
-.tab {
-    display: none;
-}
-
-.tab.active {
-    display: block;
-}
-
 
 /* Graphs */
-
-#scatterplot-matrix .tick {
-    display: none;
-}
-
-#scatterplot-matrix {
-    display: flex;
-    flex-wrap: wrap;
-}
 
 #line {
     margin-left: auto;
@@ -84,22 +28,5 @@ li.active a, li.active a:hover {
 #scatter {
     margin-left: auto;
     margin-right: auto;
-}
-
-#rhos {
-    width: 80%;
-    margin: 0px auto;
-}
-
-#rhos td {
-    text-align: center;
-}
-
-#rhos td.strongpos {
-    color: dodgerblue;
-}
-
-#rhos td.strongneg {
-    color: hotpink;
 }
 

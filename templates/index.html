@@ -1,10 +1,12 @@
 <html>
     <head>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css" rel="stylesheet" type="text/css">
         <link href="static/c3/c3.css" rel="stylesheet" type="text/css">
         <link href="//cdnjs.cloudflare.com/ajax/libs/plottable.js/2.0.0/plottable.css" rel="stylesheet" type="text/css">
         <link href="static/css/index.css" rel="stylesheet" type="text/css">
 
         <script src="static/js/jquery.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
         <script src="static/js/papaparse.js"></script>
         <script src="static/d3/d3.js"></script>
         <script src="static/c3/c3.js"></script>
@@ -14,22 +16,26 @@
         <script src="static/js/index.js"></script>
     </head>
     <body>
+        <header>
+            <nav class="blue darken-4 top-nav">
+                <div class="container">
+                    <div class="nav-wrapper">
+                        <a class="grey-text text-lighten-2 page-title">YLE Puoluekannatusmittausten Tulokset</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
         <a href="https://github.com/pparkkin/ylepuoluekannatus"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
-        <div class="content">
-            <div>
-                <!--
-                <div id="line-chart"></div>
-                --!>
+        <main>
+        <div class="container">
+            <div id="line-plot-container">
                 <svg id="line" style="max-height: 320px;"></svg>
             </div>
-            <div>
-                <!--
-                <div id="scatterplot-matrix"></div>
-                --!>
+            <div id="scatter-plot-container">
                 <svg id="scatter"></svg>
-                <table id="rhos"></table>
             </div>
         </div>
+        </main>
     </body>
 </html>
 
