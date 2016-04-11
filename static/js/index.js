@@ -205,21 +205,44 @@ function addDragBox(group, spm) {
         var nc = spm.plot._nCols;
         for (var r = 0; r < nr; r++) {
             for (var c = 0; c < nc; c++) {
-                var sp = scatterplotAt(spm.plot, r, c);
-                if (!sp) {
-                    continue;
-                }
-                var ds = sp.datasets();
-                if (clear) {
-                    ds[0].metadata({});
-                } else {
+                if (r < c) {
+                    var sp = scatterplotAt(spm.plot, r, c);
+                    if (!sp) {
+                        continue;
+                    }
+                    var ds = sp.datasets();
+                    if (clear) {
+                        ds[0].metadata({});
+                    } else {
+                        var leftD = xScale.invert(left);
+                        var rightD = xScale.invert(right);
+                        //console.log({ left: leftD, right: rightD });
+                        var md = ds[0].metadata();
+                        md.left = leftD;
+                        md.right = rightD;
+                        ds[0].metadata(md);
+                    }
+                } else if (c < r) {
                     var leftD = xScale.invert(left);
                     var rightD = xScale.invert(right);
-                    //console.log({ left: leftD, right: rightD });
-                    var md = ds[0].metadata();
-                    md.left = leftD;
-                    md.right = rightD;
-                    ds[0].metadata(md);
+                    var sp = scatterplotAt(spm.plot, c, r);
+                    if (!sp) {
+                        continue;
+                    }
+                    var ds = sp.datasets()[0];
+                    var d = ds.data()
+                        .filter(function (o) {
+                            return (leftD < o.date && o.date < rightD);
+                        });
+                    var xs = d
+                        .map(function (o) { return o.x; })
+                        .filter(function (v) { return !isNaN(v); });
+                    var ys = d
+                        .map(function (o) { return o.y; })
+                        .filter(function (v) { return !isNaN(v); });
+                    var rho = jStat.corrcoeff(xs, ys);
+                    var t = scatterplotAt(spm.plot, r, c);
+                    t.text(rho.toFixed(2));
                 }
             }
         }
