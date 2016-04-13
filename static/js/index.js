@@ -1,45 +1,6 @@
 
 var WIDTH_FACTOR = 0.9;
 
-/*
-function drawCoefficientTable(keys, cols) {
-    var th = '<tr id="rhos-th"></tr>';
-    $("#rhos").append(th);
-    $("#rhos-th").append("<th></th>");
-    for (var i = 0; i < keys.length; i++) {
-        var thd = "<th>"+keys[i]+"</th>";
-        $("#rhos-th").append(thd);
-    }
-
-    for (var i = 0; i < keys.length; i++) {
-        var trid = "rhos-row-"+i;
-        var tr = '<tr id="'+trid+'"></tr>';
-        $("#rhos").append(tr);
-        $("#"+trid).append("<th>"+keys[i]+"</th>");
-        for (var j = 0; j < keys.length; j++) {
-            if (i != j) {
-                var r = jStat.corrcoeff(cols[i], cols[j]);
-                var td = rhoTd(r);
-            } else {
-                var td = "<td>-</td>";
-            }
-            $("#"+trid).append(td);
-        }
-    }
-}
-
-function rhoTd(r) {
-    if (r < -0.8) {
-        var td = '<td class="strongneg">'+r.toFixed(2)+"</td>";
-    } else if (r > 0.8) {
-        var td = '<td class="strongpos">'+r.toFixed(2)+"</td>";
-    } else {
-        var td = '<td>'+r.toFixed(2)+"</td>";
-    }
-    return td;
-}
-*/
-
 function makeLinePlotGroup() {
     // Line Charts
     var xScale = new Plottable.Scales.Time();
@@ -275,20 +236,6 @@ function makeCharts() {
 
 $(function() {
     console.log("Hello, World!")
-
-    // Tabs
-    /*
-    $('.tabs .tab-links a').on('click', function(e) {
-        var curHref = $(this).attr('href');
-        $('.tabs ' + curHref)
-            .show()
-            .siblings().hide();
-        $(this).parent('li')
-            .addClass('active')
-            .siblings().removeClass('active');
-        e.preventDefault();
-    });
-    */
 
     makeCharts();
 
