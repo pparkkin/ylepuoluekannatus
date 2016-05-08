@@ -10,8 +10,28 @@ function makeLinePlotGroup() {
     var yAxis = new Plottable.Axes.Numeric(yScale, "left");
 
     var colorScale = new Plottable.Scales.Color()
-        .domain(["MUU", "KOK", "RKP", "KD", "VIHR", "SDP", "KESK", "VAS", "PERUSS"])
-        .range(["#666666", "#6495ED", "#007ac9", "#0135A5", "#61bf1a", "#E11931", "#95C11F", "#ed1c24", "#004DFF"]);
+        .domain([
+          "KESK",
+          "KOK",
+          "SDP",
+          "VIHR",
+          "PERUSS",
+          "VAS",
+          "RKP",
+          "KD",
+          "MUU"
+        ])
+        .range([
+          "green",
+          "blue",
+          "red",
+          "chartreuse",
+          "goldenrod",
+          "deeppink",
+          "palegreen",
+          "powderblue",
+          "pink"
+        ]);
 
     var plots = new Plottable.Components.Group();
     var legend = new Plottable.Components.Legend(colorScale);
