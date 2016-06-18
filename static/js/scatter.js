@@ -17,7 +17,45 @@ function makeScatterPlotMatrix() {
 
 }
 
-function makeScatterPlot(data, i, j) {
+function makeScatterPlot(data, i, j, xScale, yScale) {
+  var ds = new Plottable.Dataset(data[i][j]);
+  plot = new Plottable.Plots.Scatter()
+      .addDataset(ds)
+      .x(function (d, i, ds) {
+          var md = ds.metadata();
+          if (!md.left || !md.right) return d.x;
+          if (md.left < d.date && d.date < md.right) return d.x;
+          return null;
+      }, xScale)
+      .y(function (d, i, ds) {
+          var md = ds.metadata();
+          if (!md.left || !md.right) return d.y;
+          if (md.left < d.date && d.date < md.right) return d.y;
+          return null;
+      }, yScale);
+  return plot;
+}
+
+function makePartyLabel(data, i, j) {
+  plot = new Plottable.Components.TitleLabel()
+      .text(data[i][j][0].party);
+  return plot;
+}
+
+function makeRhoLabel(data, i, j) {
+  var xs = data[i][j]
+      .map(function (d) { return d.x; })
+      .filter(function (v) { return !isNaN(v); });
+  var ys = data[i][j]
+      .map(function (d) { return d.y; })
+      .filter(function (v) { return !isNaN(v); });
+  var r = jStat.corrcoeff(xs, ys);
+  plot = new Plottable.Components.TitleLabel()
+      .text(r.toFixed(2));
+  return plot;
+}
+
+function makeScatterCell(data, i, j) {
   var xScale = new Plottable.Scales.Linear();
   var yScale = new Plottable.Scales.Linear();
 
@@ -27,34 +65,11 @@ function makeScatterPlot(data, i, j) {
   var plot = null;
 
   if (i < j) {
-      var ds = new Plottable.Dataset(data[i][j]);
-      plot = new Plottable.Plots.Scatter()
-          .addDataset(ds)
-          .x(function (d, i, ds) {
-              var md = ds.metadata();
-              if (!md.left || !md.right) return d.x;
-              if (md.left < d.date && d.date < md.right) return d.x;
-              return null;
-          }, xScale)
-          .y(function (d, i, ds) {
-              var md = ds.metadata();
-              if (!md.left || !md.right) return d.y;
-              if (md.left < d.date && d.date < md.right) return d.y;
-              return null;
-          }, yScale);
+    plot = makeScatterPlot(data, i, j, xScale, yScale);
   } else if (i == j) {
-      plot = new Plottable.Components.TitleLabel()
-          .text(data[i][j][0].party);
+    plot = makePartyLabel(data, i, j);
   } else {
-      var xs = data[i][j]
-          .map(function (d) { return d.x; })
-          .filter(function (v) { return !isNaN(v); });
-      var ys = data[i][j]
-          .map(function (d) { return d.y; })
-          .filter(function (v) { return !isNaN(v); });
-      var r = jStat.corrcoeff(xs, ys);
-      plot = new Plottable.Components.TitleLabel()
-          .text(r.toFixed(2));
+    plot = makeRhoLabel(data, i, j);
   }
 
   return new Plottable.Components.Table(
@@ -81,8 +96,8 @@ function addScatterPlots(spm, parties) {
 
     data.forEach(function (row, i) {
         row.forEach(function (col, j) {
-          var plot = makeScatterPlot(data, i, j);
-          addScatterPlot(table, plot, i, j);
+          var cell = makeScatterCell(data, i, j);
+          addScatterPlot(table, cell, i, j);
         });
     });
 
