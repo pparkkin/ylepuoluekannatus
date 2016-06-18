@@ -100,6 +100,52 @@ function makeScatterPlotMatrix() {
 
 }
 
+function addScatterPlot(table, data, i, j) {
+  var xScale = new Plottable.Scales.Linear();
+  var yScale = new Plottable.Scales.Linear();
+
+  var xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
+  var yAxis = new Plottable.Axes.Numeric(yScale, "left");
+
+  var plot = null;
+
+  if (i < j) {
+      var ds = new Plottable.Dataset(data[i][j]);
+      plot = new Plottable.Plots.Scatter()
+          .addDataset(ds)
+          .x(function (d, i, ds) {
+              var md = ds.metadata();
+              if (!md.left || !md.right) return d.x;
+              if (md.left < d.date && d.date < md.right) return d.x;
+              return null;
+          }, xScale)
+          .y(function (d, i, ds) {
+              var md = ds.metadata();
+              if (!md.left || !md.right) return d.y;
+              if (md.left < d.date && d.date < md.right) return d.y;
+              return null;
+          }, yScale);
+  } else if (i == j) {
+      plot = new Plottable.Components.TitleLabel()
+          .text(data[i][j][0].party);
+  } else {
+      var xs = data[i][j]
+          .map(function (d) { return d.x; })
+          .filter(function (v) { return !isNaN(v); });
+      var ys = data[i][j]
+          .map(function (d) { return d.y; })
+          .filter(function (v) { return !isNaN(v); });
+      var r = jStat.corrcoeff(xs, ys);
+      plot = new Plottable.Components.TitleLabel()
+          .text(r.toFixed(2));
+  }
+
+  table.add(new Plottable.Components.Table(
+              [[yAxis, plot],
+               [null, xAxis]]), i, j);
+
+}
+
 function addScatterPlots(spm, parties) {
     var table = spm.plot;
 
@@ -113,49 +159,7 @@ function addScatterPlots(spm, parties) {
 
     data.forEach(function (row, i) {
         row.forEach(function (col, j) {
-            var xScale = new Plottable.Scales.Linear();
-            var yScale = new Plottable.Scales.Linear();
-
-            var xAxis = new Plottable.Axes.Numeric(xScale, "bottom");
-            var yAxis = new Plottable.Axes.Numeric(yScale, "left");
-
-            var plot = null;
-
-            if (i < j) {
-                var ds = new Plottable.Dataset(data[i][j]);
-                plot = new Plottable.Plots.Scatter()
-                    .addDataset(ds)
-                    .x(function (d, i, ds) {
-                        var md = ds.metadata();
-                        if (!md.left || !md.right) return d.x;
-                        if (md.left < d.date && d.date < md.right) return d.x;
-                        return null;
-                    }, xScale)
-                    .y(function (d, i, ds) {
-                        var md = ds.metadata();
-                        if (!md.left || !md.right) return d.y;
-                        if (md.left < d.date && d.date < md.right) return d.y;
-                        return null;
-                    }, yScale);
-            } else if (i == j) {
-                plot = new Plottable.Components.TitleLabel()
-                    .text(data[i][j][0].party);
-            } else {
-                var xs = data[i][j]
-                    .map(function (d) { return d.x; })
-                    .filter(function (v) { return !isNaN(v); });
-                var ys = data[i][j]
-                    .map(function (d) { return d.y; })
-                    .filter(function (v) { return !isNaN(v); });
-                var r = jStat.corrcoeff(xs, ys);
-                plot = new Plottable.Components.TitleLabel()
-                    .text(r.toFixed(2));
-            }
-
-            table.add(new Plottable.Components.Table(
-                        [[yAxis, plot],
-                         [null, xAxis]]), i, j);
-
+          addScatterPlot(table, data, i, j);
         });
     });
 
