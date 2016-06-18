@@ -17,7 +17,7 @@ function makeScatterPlotMatrix() {
 
 }
 
-function addScatterPlot(table, data, i, j) {
+function makeScatterPlot(data, i, j) {
   var xScale = new Plottable.Scales.Linear();
   var yScale = new Plottable.Scales.Linear();
 
@@ -57,9 +57,14 @@ function addScatterPlot(table, data, i, j) {
           .text(r.toFixed(2));
   }
 
-  table.add(new Plottable.Components.Table(
-              [[yAxis, plot],
-               [null, xAxis]]), i, j);
+  return new Plottable.Components.Table(
+    [[yAxis, plot],
+     [null, xAxis]]);
+}
+
+function addScatterPlot(table, plot, i, j) {
+
+  table.add(plot, i, j);
 
 }
 
@@ -76,7 +81,8 @@ function addScatterPlots(spm, parties) {
 
     data.forEach(function (row, i) {
         row.forEach(function (col, j) {
-          addScatterPlot(table, data, i, j);
+          var plot = makeScatterPlot(data, i, j);
+          addScatterPlot(table, plot, i, j);
         });
     });
 
