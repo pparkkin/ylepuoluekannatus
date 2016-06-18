@@ -239,7 +239,12 @@ function makeCharts() {
 
     var group = makeLinePlotGroup();
     var spm = makeScatterPlotMatrix();
+    addDragBox(group, spm);
+    return { 'line': group,
+             'scatter': spm };
+}
 
+function fetchData(f) {
     d3.csv("/pk.csv", function (error, data) {
 //        console.log(data);
         var parseDate = d3.time.format("%Y-%m-%d").parse;
@@ -250,17 +255,18 @@ function makeCharts() {
             });
         });
 
-        addLinePlots(group, parties);
-        addScatterPlots(spm, parties);
-        addDragBox(group, spm);
+        f(parties);
     });
-
 }
 
 
 $(function() {
     console.log("Hello, World!")
 
-    makeCharts();
+    var charts = makeCharts();
+    fetchData(function(parties) {
+      addLinePlots(charts['line'], parties);
+      addScatterPlots(charts['scatter'], parties);
+    });
 
 });
