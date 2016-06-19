@@ -3,18 +3,19 @@ var WIDTH_FACTOR = 0.9;
 
 function makeScatterPlotMatrix() {
     var table = new Plottable.Components.Table();
+    return {
+        plot: table
+    };
+}
 
+function renderScatterPlotMatrix(matrix) {
+    var table = matrix.plot;
     table.renderTo("svg#scatter");
 
     var w = $("#scatter").parent().width();
     $("#scatter").attr("width", WIDTH_FACTOR * w);
     $("#scatter").attr("height", WIDTH_FACTOR * w);
     table.redraw();
-
-    return {
-        plot: table
-    };
-
 }
 
 function makeScatterPlot(data, i, j, xScale, yScale) {

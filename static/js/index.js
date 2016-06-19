@@ -30,14 +30,35 @@ function fetchData(f) {
     });
 }
 
+function log_time(start, end, op) {
+  console.log(op + ": " + (end - start));
+}
+
+function time_op(f, op) {
+  var start = Date.now();
+  f();
+  var end = Date.now();
+  log_time(start, end, op);
+}
 
 $(function() {
     console.log("Hello, World!")
 
     var charts = makeCharts();
+
     fetchData(function(parties) {
-      addLinePlots(charts['line'], parties);
-      addScatterPlots(charts['scatter'], parties);
+      time_op(function () {
+        addLinePlots(charts['line'], parties);
+      }, "addLinePlots");
+      time_op(function () {
+        renderLinePlotGroup(charts['line']);
+      }, "renderLinePlotGroup");
+      time_op(function () {
+        addScatterPlots(charts['scatter'], parties);
+      }, "addScatterPlots");
+      time_op(function () {
+        renderScatterPlotMatrix(charts['scatter']);
+      }, "renderScatterPlotMatrix");
     });
 
 });

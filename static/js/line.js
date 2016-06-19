@@ -43,17 +43,23 @@ function makeLinePlotGroup() {
         [null, legend]
     ]);
 
-    table.renderTo("svg#line");
-
-    var w = $("#line").parent().width();
-    $("#line").attr("width", WIDTH_FACTOR * w);
-
     return {
+        plot: table,
         plots: plots,
         xScale: xScale,
         yScale: yScale,
         colorScale: colorScale
     };
+}
+
+function renderLinePlotGroup(group) {
+    var table = group.plot;
+
+    table.renderTo("svg#line");
+
+    var w = $("#line").parent().width();
+    $("#line").attr("width", WIDTH_FACTOR * w);
+    table.redraw();
 }
 
 function addLinePlots(group, parties) {
