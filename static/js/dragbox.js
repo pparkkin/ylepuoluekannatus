@@ -48,10 +48,13 @@ function addDragBox(group, spm) {
                         continue;
                     }
                     var ds = sp.datasets()[0];
-                    var d = ds.data()
-                        .filter(function (o) {
-                            return (leftD < o.date && o.date < rightD);
-                        });
+                    var d = ds.data();
+                    if (leftD.getTime() !== rightD.getTime()) {
+                      d = ds.data()
+                          .filter(function (o) {
+                              return (leftD < o.date && o.date < rightD);
+                          });
+                    }
                     var xs = d
                         .map(function (o) { return o.x; })
                         .filter(function (v) { return !isNaN(v); });
