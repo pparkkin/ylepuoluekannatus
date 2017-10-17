@@ -67,21 +67,11 @@ loadRows conn rs = do
   putStrLn "Loading table tulokset."
   V.mapM_ (loadRow conn) rs
   
-createTable :: Connection -> String -> IO ()
-createTable conn t =
-  case lookup t tableSpecs of
-    Just s -> do
-      putStrLn ("Creating table " ++ t ++ ".")
-      let q = Query $ T.pack $ "CREATE TABLE " ++ t ++ " (" ++ s ++ ")"
-      execute_ conn q
-    Nothing -> do
-      putStrLn ("Unable to find spec for table " ++ t ++ ".")
-        
 loadData :: Connection -> (Header, Rows) -> IO ()
 loadData conn (h, rs) = do
-  createTable conn "puolueet"
+  execute_ conn "CREATE TABLE puolueet (id integer not null, puolue text not null)"
   loadPuolueet conn h
-  createTable conn "tulokset"
+  execute_ conn "CREATE TABLE tulokset (month text not null, puolue integer not null, tulos float not null)"
   loadRows conn rs
 
 main :: IO ()
@@ -89,8 +79,3 @@ main = do
   d <- downloadData dataUrl
   withConnection "ylepuoluekannatus.sqlite3" (\c -> loadData c (parseCsv d))
   
-tableSpecs :: [(String, String)]
-tableSpecs =
-  [ ("puolueet", "id integer not null, puolue text not null")
-  , ("tulokset", "month text not null, puolue integer not null, tulos float not null")
-  ]
